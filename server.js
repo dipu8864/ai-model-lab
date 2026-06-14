@@ -7,32 +7,31 @@ app.use(express.json());
 
 app.post("/ask", async (req, res) => {
   try {
-
     const prompt = req.body.prompt;
+    console.log("Request received:", new Date());
+    const start = Date.now();
 
-    const response = await axios.post(
-      "http://localhost:11434/api/generate",
-      {
-        model: "gemma4:latest",
-        prompt: prompt,
-        stream: false
-      }
-    );
+    const response = await axios.post("http://localhost:11434/api/generate", {
+      model: "qwen3",
+      prompt: prompt,
+      stream: false,
+    });
+
+    const end = Date.now();
+
+    console.log(`Completed in ${(end - start) / 1000} seconds`);
 
     return res.json({
       success: true,
-      answer: response.data.response
+      answer: response.data.response,
     });
-
   } catch (error) {
-
     console.error(error);
 
     return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
-
   }
 });
 
