@@ -15,6 +15,9 @@ app.post("/ask", async (req, res) => {
       model: "qwen3",
       prompt: prompt,
       stream: false,
+      options: {
+        temperature: 0.2
+      }
     });
 
     const end = Date.now();
@@ -32,6 +35,53 @@ app.post("/ask", async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+});
+
+app.post("/summarize", async (req, res) => {
+  try {
+
+    const text = req.body.text;
+
+    if (!text) {
+      return res.status(400).json({
+        success: false,
+        message: "Text is required"
+      });
+    }
+
+    const prompt = `
+Summarize the following text in a concise manner:
+
+${text}
+`;
+
+    const response = await axios.post(
+      "http://localhost:11434/api/generate",
+      {
+        model: "qwen3.5:4b",
+        prompt,
+        stream: false,
+        options: {
+          temperature: 0.2
+        }
+      }
+    );
+
+    return res.json({
+      success: true,
+      summary: response.data.response.trim()
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
   }
 });
 
