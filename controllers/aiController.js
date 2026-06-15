@@ -13,13 +13,7 @@ class AIController {
         });
       }
 
-      console.log("Request received:", new Date());
-      const start = Date.now();
-
       const answer = await ollamaService.generateCompletion(prompt);
-      const end = Date.now();
-
-      console.log(`Completed in ${(end - start) / 1000} seconds`);
 
       return res.json({
         success: true,
@@ -49,7 +43,7 @@ class AIController {
 
       return res.json({
         success: true,
-        summary: summary.trim()
+        summary: summary
       });
     } catch (error) {
       console.error(error);
