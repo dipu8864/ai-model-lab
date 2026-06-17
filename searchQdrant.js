@@ -22,7 +22,8 @@ async function search(query) {
     "http://localhost:6333/collections/documents/points/search",
     {
       vector,
-      limit: 3
+      limit: 3,
+      with_payload: true
     }
   );
 
