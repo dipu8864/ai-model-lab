@@ -1,83 +1,32 @@
 const ollamaService = require("../services/ollamaService");
 const searchService = require("../services/searchService");
+const { HttpError } = require("../middleware/errorHandler");
+
+function require_(value, name) {
+  if (!value) {
+    throw new HttpError(400, `${name} is required`);
+  }
+  return value;
+}
 
 class AIController {
   async ask(req, res) {
-    try {
-      const { prompt } = req.body;
-
-      if (!prompt) {
-        return res.status(400).json({
-          success: false,
-          message: "Prompt is required"
-        });
-      }
-
-      const answer = await ollamaService.generateCompletion(prompt);
-
-      return res.json({
-        success: true,
-        answer: answer
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        success: false,
-        message: error.message
-      });
-    }
+    const prompt = require_(req.body.prompt, "Prompt");
+    const answer = await ollamaService.generateCompletion(prompt);
+    res.json({ success: true, answer });
   }
 
   async summarize(req, res) {
-    try {
-      const { text } = req.body;
-
-      if (!text) {
-        return res.status(400).json({
-          success: false,
-          message: "Text is required"
-        });
-      }
-
-      const summary = await ollamaService.summarizeText(text);
-
-      return res.json({
-        success: true,
-        summary: summary
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        success: false,
-        message: error.message
-      });
-    }
+    const text = require_(req.body.text, "Text");
+    const summary = await ollamaService.summarizeText(text);
+    res.json({ success: true, summary });
   }
 
   async search(req, res) {
-    try {
-      const { query, topK = 5 } = req.body;
-
-      if (!query) {
-        return res.status(400).json({
-          success: false,
-          message: "Query is required"
-        });
-      }
-
-      const results = await searchService.searchDocuments(query, topK);
-
-      return res.json({
-        success: true,
-        results: results
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        success: false,
-        message: error.message
-      });
-    }
+    const { topK = 5 } = req.body;
+    const query = require_(req.body.query, "Query");
+    const results = await searchService.searchDocuments(query, topK);
+    res.json({ success: true, results });
   }
 }
 

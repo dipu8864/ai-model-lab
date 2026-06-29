@@ -6,6 +6,12 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "qdrant:create": "node scripts/createCollection.js",
+    "qdrant:insert": "node scripts/insertDocuments.js",
+    "qdrant:search": "node scripts/searchQdrant.js",
+    "rag": "node scripts/askRag.js",
+    "search:local": "node scripts/searchLocal.js",
+    "embed": "node scripts/embed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
