@@ -75,19 +75,39 @@ The server will start on `http://localhost:3000`
 ```
 ai-model-lab/
 ├── config/
-│   └── ollama.js                 # Ollama configuration
+│   ├── ollama.js                 # Ollama configuration
+│   └── qdrant.js                 # Qdrant configuration
 ├── services/
-│   ├── ollamaService.js          # Ollama API client
-│   ├── embeddingService.js       # Embedding and similarity logic
-│   └── searchService.js          # Semantic search functionality
+│   ├── ollamaService.js          # Ollama generation client
+│   ├── embeddingService.js       # Embeddings + cosine similarity
+│   ├── searchService.js          # In-memory semantic search (cached index)
+│   └── qdrantService.js          # Qdrant vector DB client
 ├── controllers/
 │   └── aiController.js           # Request handlers
 ├── routes/
 │   └── aiRoutes.js               # API route definitions
-├── documents.js                  # Sample documents for search
+├── middleware/
+│   ├── asyncHandler.js           # Async route wrapper
+│   └── errorHandler.js           # 404 + centralized error responses
+├── data/
+│   └── documents.js              # Sample corpus (single source of truth)
+├── scripts/                      # Standalone CLI helpers (see Scripts below)
 ├── server.js                     # Express app entry point
 ├── package.json
 └── README.md
+```
+
+## Scripts
+
+Standalone CLI helpers (most accept text as command-line arguments):
+
+```bash
+npm run qdrant:create     # Create the Qdrant collection
+npm run qdrant:insert     # Embed the corpus and upsert into Qdrant
+npm run qdrant:search "your query"   # Vector search against Qdrant
+npm run rag "your question"          # Retrieval-augmented generation demo
+npm run search:local "your query"    # In-memory semantic search demo
+npm run embed "some text"            # Print an embedding preview
 ```
 
 ## API Endpoints
@@ -210,14 +230,19 @@ Completed in 2.456 seconds
 
 ## Environment Variables
 
-| Variable                 | Default                | Description             |
-| ------------------------ | ---------------------- | ----------------------- |
-| `PORT`                   | 3000                   | Server port             |
-| `OLLAMA_BASE_URL`        | http://localhost:11434 | Ollama API endpoint     |
-| `OLLAMA_DEFAULT_MODEL`   | qwen3.5:4b             | Model for generation    |
-| `OLLAMA_SUMMARY_MODEL`   | qwen3.5:4b             | Model for summarization |
-| `OLLAMA_EMBEDDING_MODEL` | nomic-embed-text       | Model for embeddings    |
-| `OLLAMA_TEMPERATURE`     | 0.2                    | Model temperature (0-1) |
+| Variable                 | Default                | Description                  |
+| ------------------------ | ---------------------- | ---------------------------- |
+| `PORT`                   | 3000                   | Server port                  |
+| `OLLAMA_BASE_URL`        | http://localhost:11434 | Ollama API endpoint          |
+| `OLLAMA_DEFAULT_MODEL`   | qwen3.5:4b             | Model for generation         |
+| `OLLAMA_SUMMARY_MODEL`   | qwen3.5:4b             | Model for summarization      |
+| `OLLAMA_EMBEDDING_MODEL` | nomic-embed-text       | Model for embeddings         |
+| `OLLAMA_RAG_MODEL`       | deepseek-r1:8b         | Model for the RAG script     |
+| `OLLAMA_TEMPERATURE`     | 0.2                    | Model temperature (0-1)      |
+| `QDRANT_BASE_URL`        | http://localhost:6333  | Qdrant API endpoint          |
+| `QDRANT_COLLECTION`      | documents              | Qdrant collection name       |
+| `QDRANT_VECTOR_SIZE`     | 768                    | Embedding vector dimensions  |
+| `QDRANT_DISTANCE`        | Cosine                 | Vector distance metric       |
 
 ## Error Handling
 

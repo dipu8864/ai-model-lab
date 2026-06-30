@@ -3,11 +3,8 @@ const ollamaConfig = require("../config/ollama");
 
 class EmbeddingService {
   constructor() {
-    this.baseURL = ollamaConfig.baseURL;
     this.model = ollamaConfig.embeddingModel;
-    this.client = axios.create({
-      baseURL: this.baseURL
-    });
+    this.client = axios.create({ baseURL: ollamaConfig.baseURL });
   }
 
   async getEmbedding(text) {
@@ -21,6 +18,11 @@ class EmbeddingService {
     } catch (error) {
       throw new Error(`Embedding error: ${error.message}`);
     }
+  }
+
+  // Embed many texts concurrently instead of one-by-one.
+  async getEmbeddings(texts) {
+    return Promise.all(texts.map((text) => this.getEmbedding(text)));
   }
 
   cosineSimilarity(a, b) {
